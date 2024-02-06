@@ -31,11 +31,11 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 const pool = new Pool({
-  user: 'ollie',
-  host: 'localhost',
+  user: 'postgres',
+  host: 'loud.cx2u4uq4e1am.ap-southeast-2.rds.amazonaws.com',
   database: 'load',
   password: dbPassword,
-  port: 5433,
+  port: 5432,
 })
 
 app.get('/getDances', (req: Request, res: Response) => {
