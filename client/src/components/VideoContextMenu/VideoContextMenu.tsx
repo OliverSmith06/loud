@@ -13,6 +13,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { deleteVideo } from '@/api/deleteVideo';
 import './VideoContextMenu.scss';
+import {  baseBackendUrl } from '@/secrets/env';
 
 interface VideoContextMenuProps {
     videoId: number;
@@ -37,7 +38,7 @@ export const VideoContextMenu: React.FC<VideoContextMenuProps> = ({ videoId, cla
     
     const handleDeleteVideo = () => {
         setOpenDeleteDialog(false);
-        const url = "http://localhost:8000/deleteVideo"
+        const url = `http://${baseBackendUrl}/deleteVideo`
         deleteVideo(url, videoId);
     }
 

@@ -7,6 +7,7 @@ import { getVideos } from '@/api/getVideos';
 import { getVideo } from '@/api/getVideo';
 import { CircularProgress } from '@mui/material';
 import { VideoContextMenu } from '@/components/VideoContextMenu/VideoContextMenu';
+import {  baseBackendUrl } from '@/secrets/env';
 
 interface SortableItemProps {
     name: string;
@@ -43,7 +44,7 @@ export function SortableItem(props: any) {
     const fetchVideo = async (videoId: number) => {
       console.log("TRY TO GET VIDEO")
       try {
-        const response = await fetch(`http://localhost:8000/video/${videoId}.mp4`);
+        const response = await fetch(`http://${baseBackendUrl}/video/${videoId}.mp4`);
         if (!response.ok) {
           console.log(response)
           throw new Error('Failed to fetch video');
@@ -57,7 +58,7 @@ export function SortableItem(props: any) {
     };
 
     const fetchVideoMetadata = async() => {
-      const url = "http://localhost:8000/video";
+      const url = `http://${baseBackendUrl}/video`;
       try {
         const data = await getVideo(url, props.danceId, props.id);
         setVideoData(data.video[0]);

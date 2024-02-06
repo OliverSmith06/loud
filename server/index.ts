@@ -12,6 +12,7 @@ import { SentimentResponse, SentimentSentence, ScoreType } from './meaningCloud.
 import { Dance } from './models/Dance';
 import { Video } from './models/Video';
 import { dbPassword } from './secrets/dbAuth';
+import { poolConfig } from './secrets/dbConfig';
 
 dotenv.config();
 
@@ -30,13 +31,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'loud.cx2u4uq4e1am.ap-southeast-2.rds.amazonaws.com',
-  database: 'load',
-  password: dbPassword,
-  port: 5432,
-})
+const pool = new Pool(poolConfig);
 
 app.get('/getDances', (req: Request, res: Response) => {
   pool.query('SELECT * FROM dances ORDER BY id ASC', (error: any, results: any) => {

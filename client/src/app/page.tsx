@@ -28,6 +28,7 @@ import axios from 'axios';
 import ParticleBackground from '@/components/ParticleBackground/ParticleBackground';
 import LoginPage from '@/components/LoginPage/LoginPage';
 import { PageHeading } from '@/components/PageHeading/PageHeading';
+import {  baseBackendUrl } from '@/secrets/env';
 
 const Home = () => {
 
@@ -37,7 +38,7 @@ const Home = () => {
   useEffect(() => {
     // const fetchVideo = async () => {
     //   try {
-    //     const response = await fetch(`http://localhost:8000/video/someVideo.mp4`);
+    //     const response = await fetch(`http://${baseBackendUrl}/video/someVideo.mp4`);
     //     if (!response.ok) {
     //       console.log(response)
     //       throw new Error('Failed to fetch video');
@@ -52,12 +53,12 @@ const Home = () => {
 
     
     const clearFileQueue = async() => {
-      const res = await axios.get("http://localhost:8000/clearFileQueue")
+      const res = await axios.get(`http://${baseBackendUrl}/clearFileQueue`)
     }
 
     
     const fetchDances = async() => {
-      const res = await fetch('http://localhost:8000/dances');
+      const res = await fetch(`http://${baseBackendUrl}/dances`);
       if(!res.ok) {
         console.log(res)
         throw new Error('failed to fetch sections');
@@ -177,7 +178,7 @@ const Home = () => {
     }
 
 
-    const url = "http://localhost:8000/createDance"
+    const url = `http://${baseBackendUrl}/createDance`
     try {
       const data = await postDance(url, dance);
       window.location.reload();

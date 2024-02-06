@@ -29,6 +29,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { updateVideoOrder } from '@/api/updateVideoOrder';
 import axios from 'axios';
+import {  baseBackendUrl } from '@/secrets/env';
 
 interface AccordionProps {
     key: number;
@@ -58,7 +59,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
   useEffect(() => {
 
     const fetchVideos = async() => {
-      const url = "http://localhost:8000/videos";
+      const url = `http://${baseBackendUrl}/videos`;
       try {
         const data = await getVideos(url, danceId);
         setItems((data.videos as VideoResponse[]).map(video => video.order))
@@ -166,7 +167,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
         }
       };
   
-      xhr.open('POST', 'http://localhost:8000/upload/single', true);
+      xhr.open('POST', `http://${baseBackendUrl}/upload/single`, true);
       xhr.setRequestHeader('videoid', videoId.toString());
       xhr.send(formData);
     };
@@ -181,7 +182,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
         desc: videoDesc !== '' ? [videoDesc] : undefined,
       }
 
-      const url = "http://localhost:8000/createVideo";
+      const url = `http://${baseBackendUrl}/createVideo`;
       try {
         const data = await postVideo(url, video);
         handleUpload(data.video.id)
@@ -193,7 +194,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
 
     async function saveOrder() {
       console.log(orderForSaving);
-      const url = "http://localhost:8000/updateOrdering";
+      const url = `http://${baseBackendUrl}/updateOrdering`;
       try {
         const data = await updateVideoOrder(url, initialOrdering, items, danceId);
         console.log('Posted video:', data);
