@@ -34,6 +34,12 @@ const Home = () => {
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [sectionData, setSectionData] = useState<any>(null);
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  const handleLogin = () => {
+
+  }
 
   useEffect(() => {
     // const fetchVideo = async () => {
@@ -168,6 +174,7 @@ const Home = () => {
 
   async function postData() {
     if (sectionName == null || sectionDesc == null) {
+      setHasError(true);
       return
     }
     closeAddSection();
@@ -192,12 +199,6 @@ const Home = () => {
     
   // )
 
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  const handleLogin = (isLoggedIn: boolean) => {
-    setLoggedIn(isLoggedIn);
-  };
-
   return (
     <div>
       {loggedIn ? (
@@ -209,8 +210,8 @@ const Home = () => {
                     <span  onClick={closeAddSection}>&times;</span>
                   </div>
                   <div className="add-section__modal--content">
-                    <TextField className='section-form__title' onChange={(evt) => setSectionName(evt.target.value)} id="standard-basic" label="Name" variant="standard" />
-                    <TextField className='section-form__title' onChange={(evt) => setSectionDesc(evt.target.value)} id="standard-basic" label="Description" variant="standard" />
+                    <TextField error={hasError} required className='section-form__title' onChange={(evt) => setSectionName(evt.target.value)} id="standard-basic" label="Name" variant="standard" />
+                    <TextField error={hasError} required className='section-form__title' onChange={(evt) => setSectionDesc(evt.target.value)} id="standard-basic" label="Description" variant="standard" />
                     <Button className='section-form__submit' onClick={postData} variant="contained" color="secondary">
                       Add Section
                     </Button>

@@ -1,5 +1,5 @@
 import { webPass, webUser } from '@/secrets/webAuth';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface LoginProps {
     onLogin: any;
@@ -9,6 +9,12 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        onLogin(JSON.parse(localStorage.getItem('loggedIn') || 'false'))
+      }
+    }, []);
   
     const handleLogin = () => {
       if (username === webUser && password === webPass) {

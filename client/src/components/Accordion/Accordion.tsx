@@ -159,6 +159,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
             console.log('Upload successful');
+            window.location.reload()
             setStatus('completed')
           } else {
             setStatus('failed')
@@ -197,7 +198,8 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
       const url = `http://${baseBackendUrl}/updateOrdering`;
       try {
         const data = await updateVideoOrder(url, initialOrdering, items, danceId);
-        console.log('Posted video:', data);
+        window.location.reload();
+        console.log('Updated Order:', data);
       } catch (error) {
         console.error('Failed to post video:', error);
       }
