@@ -31,12 +31,13 @@ import { updateVideoOrder } from '@/api/updateVideoOrder';
 import axios from 'axios';
 
 interface AccordionProps {
+    key: number;
     danceId: number;
     title: string;
     videoIds: number[];
 }
 
-export const Accordion: React.FC<AccordionProps> = ({ danceId, title, videoIds}) => {
+export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, videoIds}) => {
 
   const [items, setItems] = useState<number[]>([]);
   const [isExpanded, setIsExpanded] = useState(true);

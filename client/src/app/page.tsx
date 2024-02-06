@@ -237,7 +237,7 @@ const Home = () => {
             <Accordion danceId={1} title='Pink - 9DA' videoIds={[1,3]} /> */}
             {sectionData ? (
               sectionData.map((section: any) => (
-                <Accordion danceId={section.id} title={section.name} videoIds={[1,3]} />
+                <Accordion key={section.id} danceId={section.id} title={section.name} videoIds={[1,3]} />
               ))
             ) : (
               <CircularProgress style={{marginBottom: '2rem'}} />
