@@ -47,7 +47,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
   const [videoDesc, setVideoDesc] = useState<string>('');
   const [videosData, setVideosData] = useState<any>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
   const [open, setOpen] = React.useState(false);
   const [status, setStatus] = useState('uploading');
@@ -135,7 +135,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
       setOpen(false);
     };
 
-    const handleUpload = (videoId: number) => {
+    const handleUpload = (videoName: string) => {
       if (!selectedFile) {
         console.error('No file selected');
         return;
@@ -143,7 +143,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
   
       const formData = new FormData();
       formData.append('file', selectedFile);
-      formData.append('videoId', videoId.toString());
+      formData.append('videoname', videoName);
   
       const xhr = new XMLHttpRequest();
       setOpen(true);
@@ -169,11 +169,24 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
       };
   
       xhr.open('POST', `http://${baseBackendUrl}/upload/single`, true);
-      xhr.setRequestHeader('videoid', videoId.toString());
+      xhr.setRequestHeader('videoname', videoName);
       xhr.send(formData);
     };
 
     async function postData() {
+
+      if (!selectedFile) {
+        console.error('No file selected');
+        return;
+      }
+      
+      if (!selectedFile.name) {
+        console.error('No file name');
+        return;
+      }
+      
+      const fileExtension = selectedFile.name.split(".").pop();
+      
       closeAddVideo();
       const video: Video = {
         dance: danceId,
@@ -181,12 +194,13 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
         date: new Date(),
         name: videoName !== '' ? [videoName] : undefined,
         desc: videoDesc !== '' ? [videoDesc] : undefined,
+        video_type: [fileExtension || 'mp4'],
       }
 
       const url = `http://${baseBackendUrl}/createVideo`;
       try {
         const data = await postVideo(url, video);
-        handleUpload(data.video.id)
+        handleUpload(`${data.video.id}.${data.video.video_type}`)
         console.log('Posted video:', data);
       } catch (error) {
         console.error('Failed to post video:', error);

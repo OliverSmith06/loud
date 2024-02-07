@@ -41,10 +41,10 @@ export function SortableItem(props: any) {
   const [showControls, setShowControls] = useState(false);
 
   useEffect(() => {
-    const fetchVideo = async (videoId: number) => {
+    const fetchVideo = async (videoName: string) => {
       console.log("TRY TO GET VIDEO")
       try {
-        const response = await fetch(`http://${baseBackendUrl}/video/${videoId}.mp4`);
+        const response = await fetch(`http://${baseBackendUrl}/video/${videoName}`);
         if (!response.ok) {
           console.log(response)
           throw new Error('Failed to fetch video');
@@ -62,7 +62,7 @@ export function SortableItem(props: any) {
       try {
         const data = await getVideo(url, props.danceId, props.id);
         setVideoData(data.video[0]);
-        fetchVideo(data.video[0].id);
+        fetchVideo(`${data.video[0].id}.${data.video[0].video_type}`);
         console.log('Received video:', data.video[0]);
       } catch (error) {
         console.error('Failed to fetch videos:', error);

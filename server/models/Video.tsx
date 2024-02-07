@@ -4,4 +4,5 @@ export interface Video {
     date: Date;
     name?: string[];
     desc?: string[];
+    video_type?: string[];
 }

@@ -22,13 +22,14 @@
     &__content {
         display: flex;
         flex-direction: column;
-        height: 15vw;
+        height: 20rem;
         
         &--video {
             z-index: 1;
             border-top-right-radius: 15px;
             border-top-left-radius: 15px;
-            // height: 15vw;
+            background-color: black;
+            height: 15rem;
         }
 
         &--video-skeleton {

@@ -90,11 +90,11 @@ app.post('/createVideo', async (req: Request, res: Response) => {
     const newVideo: Video = req.body;
 
     const query = `
-      INSERT INTO videos (dance, "order", "date", "name", "desc")
-      SELECT $1, COALESCE((SELECT COUNT(*) FROM videos WHERE dance = $1), 0) + 1, $2, $3, $4
+      INSERT INTO videos (dance, "order", "date", "name", "desc", "video_type")
+      SELECT $1, COALESCE((SELECT COUNT(*) FROM videos WHERE dance = $1), 0) + 1, $2, $3, $4, $5
       RETURNING *
     `;
-    const values = [newVideo.dance, newVideo.date, newVideo.name, newVideo.desc];
+    const values = [newVideo.dance, newVideo.date, newVideo.name, newVideo.desc, newVideo.video_type];
 
     const result = await pool.query(query, values);
     const insertedVideo = result.rows[0]; // Assuming only one row is returned
@@ -325,8 +325,8 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     // console.log(req.headers)
-    const videoId = req.headers.videoid;
-    cb(null, `${videoId}.${file.originalname.split(".").pop()}`);
+    const videoName = req.headers.videoname;
+    cb(null, `${videoName}`);
   },
 });
 
