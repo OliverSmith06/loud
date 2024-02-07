@@ -50,11 +50,13 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
   const [open, setOpen] = React.useState(false);
+  const [error, setError] = React.useState(false);
   const [status, setStatus] = useState('uploading');
   const [showVideos, setShowVideos] = useState(false);
   const [showSaveOrder, setShowSaveOrder] = useState(false);
   const [initialOrdering, setInitialOrdering] = useState<number[]>([])
   const [orderForSaving, setOrderForSaving] = useState<number[]>([]);
+  const [currentErrorMessage, setCurrentErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
 
@@ -135,6 +137,14 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
       setOpen(false);
     };
 
+    const handleErrorClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+  
+      setError(false);
+    };
+
     const handleUpload = (videoName: string) => {
       if (!selectedFile) {
         console.error('No file selected');
@@ -177,6 +187,8 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
 
       if (!selectedFile) {
         console.error('No file selected');
+        setCurrentErrorMessage("No file selected")
+        setError(true);
         return;
       }
       
@@ -232,6 +244,19 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
       </React.Fragment>
     );
 
+    const errorAction = (
+      <React.Fragment>
+        <IconButton
+          size="small"
+          aria-label="close"
+          color="inherit"
+          onClick={handleErrorClose}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </React.Fragment>
+    )
+
     
 
     let icon;
@@ -247,6 +272,12 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
       <React.Fragment>
         {icon}
         {`Upload in progress: ${uploadProgress.toFixed(2)}%`}
+      </React.Fragment>
+    )
+
+    const errorMessage = (
+      <React.Fragment>
+        {currentErrorMessage && <div>{currentErrorMessage}</div>}
       </React.Fragment>
     )
 
@@ -342,6 +373,12 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
             onClose={handleClose}
             message={snackContent}
             action={action}
+          />
+          <Snackbar
+            open={error}
+            onClose={handleErrorClose}
+            message={errorMessage}
+            action={errorAction}
           />
         </div>
     )
