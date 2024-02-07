@@ -321,7 +321,7 @@ export const Accordion: React.FC<AccordionProps> = ({ key, danceId, title, video
           )}
           <div className='accordion'>
               
-              <div className='accordion__header' onClick={handleClick} style={{ cursor: 'pointer' }}>
+              <div className={`accordion__header ${isExpanded ? '' : 'accordion__header--collapsed'}`}  onClick={handleClick} style={{ cursor: 'pointer' }}>
               <div className='accordion__header--icon'>
                   {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
               </div>

@@ -4,6 +4,8 @@
     border-top-left-radius: 2rem;
     width: 70vw;
     margin-bottom: 4rem;
+    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: 1rem;
     // height: inherit;
     &div{
         transition: 0.4s;
@@ -17,6 +19,10 @@
         padding: 1rem;
         border-top-right-radius: 1rem;
         border-top-left-radius: 1rem;
+        &--collapsed {
+            border-bottom-right-radius: 1rem;
+            border-bottom-left-radius: 1rem;
+        }
         &--title {
             flex-grow: 1;
             padding-left: 1%;
