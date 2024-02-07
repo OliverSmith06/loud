@@ -131,6 +131,9 @@
         display: flex;
         flex-direction: column;
         padding: 0 10% 10% 10%;
+        @media (max-width: 430px) {
+            width: 90vw;
+        }
     }
 }
 
