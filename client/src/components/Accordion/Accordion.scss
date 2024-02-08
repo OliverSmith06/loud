@@ -19,6 +19,9 @@
         padding: 1rem;
         border-top-right-radius: 1rem;
         border-top-left-radius: 1rem;
+        &--jungle-james {
+            background-color: #447e3d;
+        }
         &--collapsed {
             border-bottom-right-radius: 1rem;
             border-bottom-left-radius: 1rem;
