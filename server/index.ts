@@ -226,7 +226,7 @@ app.get('/clearFileQueue', (req, res) => {
   res.status(200).json({message: "CLEARED"})
 })
 
-app.get('/video/:filename', (req, res) => {
+app.get('/video-tmep/:filename', (req, res) => {
   const videoPath = path.join(__dirname, '..', 'uploads', req.params.filename);
   
   // Check if the video file exists
@@ -234,8 +234,10 @@ app.get('/video/:filename', (req, res) => {
     return res.status(404).send('Video not found');
   }
 
+  const fileExtension = req.params.filename.split(".").pop();
+
   // Set the content type for the response
-  res.setHeader('Content-Type', 'video/mp4');
+  res.setHeader('Content-Type', `video/${fileExtension}`);
 
   // Create a readable stream from the video file
   const videoStream = fs.createReadStream(videoPath);
@@ -248,6 +250,38 @@ app.get('/video/:filename', (req, res) => {
     console.error('Error streaming video:', err);
     res.status(500).send('Internal server error');
   });
+});
+
+app.get('/video/:id', (req, res) => {
+  const videoPath = path.join(__dirname, '..', 'uploads', req.params.id);
+  const videoStat = fs.statSync(videoPath);
+  const fileSize = videoStat.size;
+  const videoRange = req.headers.range;
+  console.log("TEST")
+  if (videoRange) {
+      const parts = videoRange.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1]
+          ? parseInt(parts[1], 10)
+          : fileSize-1;
+      const chunksize = (end-start) + 1;
+      const file = fs.createReadStream(videoPath, {start, end});
+      const head = {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Type': 'video/mp4',
+      };
+      res.writeHead(206, head);
+      file.pipe(res);
+  } else {
+      const head = {
+          'Content-Length': fileSize,
+          'Content-Type': 'video/mp4',
+      };
+      res.writeHead(200, head);
+      fs.createReadStream(videoPath).pipe(res);
+  }
 });
 
 app.get('/videoOld/:filename', (req, res) => {

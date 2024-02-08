@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
 import './SortableItem.scss'
@@ -39,29 +39,42 @@ export function SortableItem(props: any) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoData, setVideoData] = useState<any>(null);
   const [showControls, setShowControls] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const fetchVideo = async (videoName: string) => {
-      try {
-        const response = await fetch(`http://${baseBackendUrl}/video/${videoName}`);
-        if (!response.ok) {
-          console.log(response)
-          throw new Error('Failed to fetch video');
-        }
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setVideoUrl(url);
-      } catch (error) {
-        console.error('Error fetching video:', error);
-      }
-    };
+    // const fetchVideo = async (videoName: string) => {
+    //   try {
+    //     const response = await fetch(`http://${baseBackendUrl}/video/${videoName}`);
+    //     if (!response.ok) {
+    //       console.log(response)
+    //       throw new Error('Failed to fetch video');
+    //     }
+    //     const blob = await response.blob();
+    //     const url = URL.createObjectURL(blob);
+    //     setVideoUrl(url);
+    //   } catch (error) {
+    //     console.error('Error fetching video:', error);
+    //   }
+    // };
+
+    // const fetchVideo = async (videoName: string) => {
+    //   try {
+    //     const response = await fetch(`http://${baseBackendUrl}/video/${videoName}`);
+    //     const blob = await response.blob();
+    //     if (videoRef.current) {
+    //       videoRef.current.src = URL.createObjectURL(blob);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error streaming video:', error);
+    //   }
+    // };
 
     const fetchVideoMetadata = async() => {
       const url = `http://${baseBackendUrl}/video`;
       try {
         const data = await getVideo(url, props.danceId, props.id);
         setVideoData(data.video[0]);
-        fetchVideo(`${data.video[0].id}.${data.video[0].video_type}`);
+        // fetchVideo(`${data.video[0].id}.${data.video[0].video_type}`);
       } catch (error) {
         console.error('Failed to fetch videos:', error);
       }
@@ -97,21 +110,13 @@ export function SortableItem(props: any) {
       >
       {videoData && (
         <div className='video-item__content'>
-          {/* <ReactPlayer
-            className='video-item__content--video'
-            url= 'videos/01.mkv'
-            width='100%'
-            height='77%'
-            controls = {true}
-
-          /> */}
-          {videoUrl ? (
+          {videoData ? (
             <video className='video-item__content--video' 
               controls={showControls} // Hide controls by default
               onMouseEnter={handleMouseEnter} // Show controls on mouse enter
               onMouseLeave={handleMouseLeave}
             >
-              <source src={videoUrl} type="video/mp4" />
+              <source src={`http://${baseBackendUrl}/video/${videoData.id}.${videoData.video_type}`} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           ) : (
