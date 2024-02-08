@@ -252,8 +252,12 @@ app.get('/video-tmep/:filename', (req, res) => {
   });
 });
 
-app.get('/video/:id', (req, res) => {
-  const videoPath = path.join(__dirname, '..', 'uploads', req.params.id);
+app.get('/video/:filename', (req, res) => {
+  const videoPath = path.join(__dirname, '..', 'uploads', req.params.filename);
+  let fileExtension = req.params.filename.split(".").pop();
+  if (fileExtension === 'mov') {
+    fileExtension = 'quicktime'
+  }
   const videoStat = fs.statSync(videoPath);
   const fileSize = videoStat.size;
   const videoRange = req.headers.range;
@@ -270,14 +274,14 @@ app.get('/video/:id', (req, res) => {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize,
-          'Content-Type': 'video/mp4',
+          'Content-Type': `video/${fileExtension}`,
       };
       res.writeHead(206, head);
       file.pipe(res);
   } else {
       const head = {
           'Content-Length': fileSize,
-          'Content-Type': 'video/mp4',
+          'Content-Type': `video/${fileExtension}`,
       };
       res.writeHead(200, head);
       fs.createReadStream(videoPath).pipe(res);
