@@ -34,12 +34,8 @@ const Home = () => {
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [sectionData, setSectionData] = useState<any>(null);
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [allowedToView, setAllowedToView] = useState<boolean | null>(null);
   const [hasError, setHasError] = useState(false);
-
-  const handleLogin = () => {
-
-  }
 
   useEffect(() => {
     // const fetchVideo = async () => {
@@ -56,6 +52,27 @@ const Home = () => {
     //     console.error('Error fetching video:', error);
     //   }
     // };
+    const fetchAccess = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://${baseBackendUrl}/protected`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}` // Include the token in the Authorization header
+          }
+        });
+        if (!response.ok) {
+          setAllowedToView(false);
+          throw new Error('Failed to fetch data');
+        }
+        setAllowedToView(true);
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        setAllowedToView(false);
+        console.error(error);
+      }
+    };
 
     
     const clearFileQueue = async() => {
@@ -77,6 +94,7 @@ const Home = () => {
       await fetchDances(); // Wait for fetchDances to complete
     };
   
+    fetchAccess();
     initializeData();
 
     // Clean up the URL object when the component is unmounted
@@ -201,7 +219,7 @@ const Home = () => {
 
   return (
     <div>
-      {loggedIn ? (
+      {allowedToView != null && (allowedToView ? (
         <div>
             {showModal && (
               <div className="add-section__modal">
@@ -284,8 +302,11 @@ const Home = () => {
           <ParticleBackground />
         </div>
       ) : (
-        <LoginPage onLogin={handleLogin} />
-      )}
+        <div>
+          <ParticleBackground />
+          <LoginPage />
+        </div>
+      ))}
     </div>
   )
 }

@@ -6,13 +6,12 @@ import fs from 'fs';
 import { Pool } from 'pg';
 import path from 'path';
 import multer from 'multer';
-import { GuardianPage } from './guardian.constants';
-import { GuardianApiKey, MeaningCloudApiKey } from './secrets/apiKey';
-import { SentimentResponse, SentimentSentence, ScoreType } from './meaningCloud.constants';
 import { Dance } from './models/Dance';
 import { Video } from './models/Video';
 import { dbPassword } from './secrets/dbAuth';
+import { masterUsername, masterPassword } from './secrets/websiteLogin';
 import { poolConfig } from './secrets/dbConfig';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -32,6 +31,43 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 const pool = new Pool(poolConfig);
+
+function authenticateToken(req: any, res: any, next: any) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, "RANDOM-TOKEN", (err: any, user: any) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+    req.user = user;
+    next();
+  });
+}
+
+app.get("/protected", authenticateToken, (req, res) => {
+  res.status(200).json({ message: "Authenticated endpoint accessed successfully" });
+});
+
+app.post("/login", (req, res) => {
+  const user = masterUsername;
+  const password = masterPassword;
+  const inputUsername = req.body.username;
+  const inputPassword = req.body.password;
+
+  if (user !== inputUsername || password !== inputPassword) {
+    res.status(400).json({message: "username or password does not match"})
+    return;
+  }
+
+  const token = jwt.sign({ username: user }, "RANDOM-TOKEN", { expiresIn: '1h' });
+
+  res.status(200).json({ token });
+})
 
 app.get('/getDances', (req: Request, res: Response) => {
   pool.query('SELECT * FROM dances ORDER BY id ASC', (error: any, results: any) => {
@@ -108,7 +144,6 @@ app.post('/createVideo', async (req: Request, res: Response) => {
 
 app.post('/createDance', (req: Request, res: Response) => {
   const newDance: Dance = req.body;
-  console.log(newDance)
 
   pool.query('INSERT INTO dances (name, "desc", dance_order) VALUES ($1, $2, $3) RETURNING *', [newDance.name, newDance.desc, newDance.dance_order], (error, results) => {
     if (error) {
