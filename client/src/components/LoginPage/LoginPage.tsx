@@ -99,6 +99,7 @@ const LoginPage= () => {
                 autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
               />
+              {error && (error)}
               <Button
                 type="submit"
                 fullWidth
