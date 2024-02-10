@@ -12,6 +12,9 @@ import { dbPassword } from './secrets/dbAuth';
 import { masterUsername, masterPassword } from './secrets/websiteLogin';
 import { poolConfig } from './secrets/dbConfig';
 import jwt from 'jsonwebtoken';
+import ffmpeg from 'fluent-ffmpeg';
+import { exec } from 'child_process';
+import sharp from 'sharp';
 
 dotenv.config();
 
@@ -20,6 +23,8 @@ const headers: Headers = new Headers()
 headers.set('Content-Type', 'application/json')
 headers.set('Accept', 'application/json')
 headers.set('X-Custom-Header', 'CustomValue')
+ffmpeg.setFfmpegPath(require('@ffmpeg-installer/ffmpeg').path);
+ffmpeg.setFfprobePath(require('@ffprobe-installer/ffprobe').path);
 
 const app: Express = express();
 const port = process.env.PORT;
@@ -76,6 +81,52 @@ app.get('/getDances', (req: Request, res: Response) => {
     }
     res.status(200).json(results.rows)
   })
+});
+
+app.get('/random-frame/:filename', async (req: Request, res: Response) => {
+  try {
+    const videoPath = `./uploads/${req.params.filename}`;
+    const id = req.params.filename.split('.')[0]
+    const tempImagePath = `./${id}-temp.jpg`;
+
+    // Get the duration of the video
+    const { duration } = await new Promise<any>((resolve, reject) => {
+      ffmpeg.ffprobe(videoPath, (err, metadata) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(metadata.format);
+      });
+    });
+
+    // // Generate a random time within the duration of the video
+    const randomTime = Math.random() * duration;
+
+    // Extract a frame at the random time
+    await new Promise<void>((resolve, reject) => {
+      ffmpeg(videoPath)
+        .seekInput(randomTime)
+        .frames(1)
+        .output(tempImagePath)
+        .on('end', () => resolve())
+        .on('error', (err) => reject(err))
+        .run();
+    });
+
+    // Read the temporary image file
+    const image = fs.readFileSync(tempImagePath);
+
+    // Send the temporary image in the response
+    res.set('Content-Type', 'image/jpeg');
+    res.send(image);
+
+    // Delete the temporary image file
+    fs.unlinkSync(tempImagePath);
+  } catch (e) {
+    console.error('Error:', e);
+    res.status(500).send('Failed to extract random frame');
+  }
 });
 
 app.delete('/deleteVideo', async(req: Request, res: Response) => {

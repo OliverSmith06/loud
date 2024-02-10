@@ -8,6 +8,7 @@ import { getVideo } from '@/api/getVideo';
 import { CircularProgress } from '@mui/material';
 import { VideoContextMenu } from '@/components/VideoContextMenu/VideoContextMenu';
 import {  baseBackendUrl } from '@/secrets/env';
+import { PlayArrow } from '@mui/icons-material';
 
 interface SortableItemProps {
     name: string;
@@ -39,6 +40,7 @@ export function SortableItem(props: any) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoData, setVideoData] = useState<any>(null);
   const [showControls, setShowControls] = useState(false);
+  const [playVideo, setPlayVideo] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -99,6 +101,10 @@ export function SortableItem(props: any) {
   const handleMouseLeave = () => {
     setShowControls(false);
   };
+
+  const onPlay = () => {
+    setPlayVideo(true);
+  }
   
   return (
     <div  
@@ -111,14 +117,31 @@ export function SortableItem(props: any) {
       {videoData && (
         <div className='video-item__content'>
           {videoData ? (
-            <video className='video-item__content--video' 
-              controls={showControls} // Hide controls by default
-              onMouseEnter={handleMouseEnter} // Show controls on mouse enter
-              onMouseLeave={handleMouseLeave}
-            >
-              <source src={`http://${baseBackendUrl}/video/${videoData.id}.${videoData.video_type}`} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            <>
+              {playVideo ? (
+                <video className='video-item__content--video' 
+                  autoPlay
+                  controls={showControls} // Hide controls by default
+                  onMouseEnter={handleMouseEnter} // Show controls on mouse enter
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <source src={`http://${baseBackendUrl}/video/${videoData.id}.${videoData.video_type}`} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <div 
+                  onClick={onPlay} 
+                  className='video-item__content--video'
+                  style={{
+                    backgroundImage: `url('http://${baseBackendUrl}/random-frame/${videoData.id}.${videoData.video_type}')`, // Replace with your image path
+                    backgroundSize: 'cover', // Adjust as needed
+                    backgroundPosition: 'center', // Adjust as needed
+                  }}
+                >
+                  <div><PlayArrow style={{color: 'white', fontSize: '6rem'}} /></div>
+                </div>
+              )}
+            </>
           ) : (
             <div className='video-item__content--video-skeleton'><CircularProgress /></div>
           )}
