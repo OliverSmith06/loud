@@ -231,7 +231,7 @@ const Home = () => {
                     <TextField error={hasError} required className='section-form__title' onChange={(evt) => setSectionName(evt.target.value)} id="standard-basic" label="Name" variant="standard" />
                     <TextField error={hasError} required className='section-form__title' onChange={(evt) => setSectionDesc(evt.target.value)} id="standard-basic" label="Description" variant="standard" />
                     <Button className='section-form__submit' onClick={postData} variant="contained" color="secondary">
-                      Add Section
+                      Add Dance
                     </Button>
                   </div>
                 </div>
