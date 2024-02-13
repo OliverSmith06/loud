@@ -106,7 +106,7 @@ app.get('/random-frame/:filename', async (req: Request, res: Response) => {
     // Extract a frame at the random time
     await new Promise<void>((resolve, reject) => {
       ffmpeg(videoPath)
-        .seekInput(randomTime)
+        .seekInput(0)
         .frames(1)
         .output(tempImagePath)
         .on('end', () => resolve())
