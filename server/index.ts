@@ -71,6 +71,8 @@ app.post("/login", (req, res) => {
 
   const token = jwt.sign({ username: user }, "RANDOM-TOKEN", { expiresIn: '1h' });
 
+  console.log('LOGGED IN: ' + new Date());
+
   res.status(200).json({ token });
 })
 
