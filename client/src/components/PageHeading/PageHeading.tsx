@@ -45,8 +45,8 @@ export const PageHeading = () => {
 
   return (
     <main className="title-wrapper">
-      <h1 className={`title ${myFont.className}`}>CLIMBING</h1>
-      <h1 className={`title-placeholder ${myFont.className}`}>CLIMBING</h1>
+      <h1 className={`title ${myFont.className}`}>LOUD</h1>
+      <h1 className={`title-placeholder ${myFont.className}`}>LOUD</h1>
     </main>
   );
 };
