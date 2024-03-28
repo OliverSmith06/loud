@@ -80,7 +80,7 @@ export const VideoContextMenu: React.FC<VideoContextMenuProps> = ({ videoId, cla
                 {"Are you sure?"}
                 </DialogTitle>
                 <DialogActions>
-                <Button style={{backgroundColor: "#8a79bb", color: "black"}} onClick={handleCloseDeleteDialog}>Cancel</Button>
+                <Button style={{backgroundColor: "#4085db", color: "black"}} onClick={handleCloseDeleteDialog}>Cancel</Button>
                 <Button style={{backgroundColor: "#fc3165", color: "black"}} onClick={handleDeleteVideo} autoFocus>
                     Remove
                 </Button>

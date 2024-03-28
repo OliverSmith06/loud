@@ -15,7 +15,6 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.0",
     "@mui/material": "^5.15.0",
-    "@next/font": "^14.1.0",
     "@tsparticles/engine": "^3.2.1",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.2.1",
