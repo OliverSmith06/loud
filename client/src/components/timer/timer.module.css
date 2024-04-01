@@ -1,0 +1,89 @@
+.wrapper {
+    background-color: rgba(165, 159, 157, 0.8);
+    position: absolute;
+    width: 30%;
+    height: 20%;
+    z-index: 1;
+    left: 35%;
+    top: 40%;
+    /* border-radius: 1.5vw; */
+}
+
+.countdownText {
+  height: 100%;
+  text-align: center;
+  font-size: 3rem;
+}
+
+.countdownTitle {
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+/* *, *::before, *::after {
+box-sizing: border-box;
+} */
+
+@keyframes rotate {
+100% {
+    transform: rotate(1turn);
+}
+}
+
+/* :root {
+--angle: 45deg;
+--opacity: 0.5;
+} */
+
+.wrapper {
+position: absolute;
+width: 36vw;
+height: 10vw;
+z-index: 1;
+left: 32vw;
+top: calc(50vh-5vw);
+/* border-radius: 10px; */
+overflow: hidden;
+padding: 2rem;
+
+border: 0.5rem solid transparent;
+
+/* Paint an image in the border */
+border-image:
+  conic-gradient(
+    from var(--angle),
+    #d53e33 0deg 90deg,
+    transparent 90deg 180deg,
+    transparent 180deg 270deg,
+    transparent 270deg 360deg
+  ) 1;
+}
+
+
+@property --opacity {
+    syntax: "<number>";
+    initial-value: 0.5;
+    inherits: false;
+  }
+
+  @property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes opacityChange {
+    to {
+      --opacity: 1;
+    }
+  }
+
+  @keyframes rotate {
+    to {
+      --angle: 360deg;
+    }
+  }
+
+  .wrapper {
+    animation: rotate 4s linear infinite, opacityChange 3s infinite alternate;
+  }

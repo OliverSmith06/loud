@@ -1,0 +1,26 @@
+.wrapper {
+    height: 5vh;
+    background-color: lightgray;
+}
+
+.bar {
+    height: inherit;
+    width: 30%;
+    background-color: greenyellow;
+}
+
+.counter {
+    position: absolute;
+    width: 100%;
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.innerCounter {
+    height: 100%; 
+    display: flex; 
+    flex-direction: row; 
+    align-items: center;
+}

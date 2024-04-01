@@ -24,6 +24,7 @@
     "react-dom": "^18",
     "react-particles": "^2.12.2",
     "react-player": "^2.14.1",
+    "react-router-dom": "^6.22.3",
     "react-video": "^1.5.3",
     "recharts": "^2.10.3",
     "sass": "^1.70.0",

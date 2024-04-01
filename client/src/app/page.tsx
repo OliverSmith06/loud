@@ -29,6 +29,7 @@ import ParticleBackground from '@/components/ParticleBackground/ParticleBackgrou
 import LoginPage from '@/components/LoginPage/LoginPage';
 import { PageHeading } from '@/components/PageHeading/PageHeading';
 import {  baseBackendUrl } from '@/secrets/env';
+import Link from 'next/link';
 
 const Home = () => {
 
@@ -213,14 +214,11 @@ const Home = () => {
     }
   }
 
-  // return(
-    
-  // )
-
   return (
     <div>
       {allowedToView != null && (allowedToView ? (
         <div>
+            <Link href="/Countdown">Countdown</Link>
             {showModal && (
               <div className="add-section__modal">
                 <div className='add-section__modal--wrapper'>
@@ -239,22 +237,6 @@ const Home = () => {
             )}
             <div className="flex min-h-screen flex-col items-center p-24 dashboard">
             <PageHeading />
-            {/* <div>
-              <input type="file" onChange={handleFileChange} />
-              <button onClick={handleUpload}>Upload</button>
-              {uploadProgress > 0 && <p>Upload progress: {uploadProgress.toFixed(2)}%</p>}
-            </div>
-            <div>
-              {videoUrl && (
-                <video controls>
-                  <source src={videoUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              )}
-            </div> */}
-
-            {/* <Accordion danceId={2} title='Red - 9DLC' videoIds={[1,3,2,4]} />
-            <Accordion danceId={1} title='Pink - 9DA' videoIds={[1,3]} /> */}
             {sectionData ? (
               sectionData.map((section: any) => (
                 <Accordion key={section.id} danceId={section.id} title={section.name} videoIds={[1,3]} />
@@ -263,41 +245,6 @@ const Home = () => {
               <CircularProgress style={{marginBottom: '2rem'}} />
             )}
             <div onClick={openAddSection} className='add-section'><div className='line'></div><AddCircleOutline /><div className='line'></div></div>
-            
-            {/* <div className='accordion'>
-              <div className='accordion__header' onClick={handleClick} style={{ cursor: 'pointer' }}>
-                <div className='accordion__header--icon'>
-                  {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                </div>
-                <div className='accordion__header--title'>
-                  Red - 9DLC
-                </div>
-              </div>
-              <div className={`accordion-content ${isExpanded ? 'expanded' : 'collapsed'}`}>
-                <DndContext 
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-                >
-                  <SortableContext 
-                    items={items}
-                    strategy={rectSortingStrategy}
-                    >
-                    
-                      <div>
-                      {items.map(id => <SortableItem key={id} id={id} />)}
-                      <div className='accordion__content--add-video'>
-                        <div className='accordion__content--add-video--items'>
-                          <div><Add /></div>
-                          <div>Add Video</div>
-                        </div>
-                      </div>
-                      </div> 
-                    
-                  </SortableContext>
-                </DndContext> 
-              </div>
-          </div> */}
           </div>
           
         </div>
