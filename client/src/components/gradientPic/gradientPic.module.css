@@ -7,16 +7,27 @@
   /* transition: width 0.3s ease; */
   width: 35%;
   height: 100%;
-  background-image: url("./guangzhou.jpg");
   background-size: 100vw;
   position: absolute;
 }
 
 .seoulBW {
-  background-image: url("./guangzhou.jpg");
   background-size: 100vw;
   filter:grayscale();
   width: inherit;
   height: inherit;
   position: absolute;
+}
+
+/* SMALL SCREEN */
+.seoulImg, .seoulBW {
+  background-image: url("./guangzhou-mobile.jpg");
+  background-size: 125vw;
+}
+
+@media (min-width: 768px) {
+  .seoulImg,
+  .seoulBW {
+    background-image: url("./guangzhou.jpg");
+  }
 }
