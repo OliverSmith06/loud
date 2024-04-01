@@ -299,7 +299,7 @@ const Home = () => {
               </div>
           </div> */}
           </div>
-          <ParticleBackground />
+          
         </div>
       ) : (
         <div>

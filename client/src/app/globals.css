@@ -18,5 +18,6 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: #101418;
+  background: url("goals-background.png")
+  /* background: #101418; */
 }
