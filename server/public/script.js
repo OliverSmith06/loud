@@ -1,9 +1,8 @@
 const socket = io('/')
 const videoGrid = document.getElementById('video-grid')
 const myPeer = new Peer(undefined, {
-  host: 'video.noppy.link',
-  port: 443,
-  secure: true
+  host: '/',
+  port: '7001'
 })
 const myVideo = document.createElement('video')
 myVideo.muted = true
