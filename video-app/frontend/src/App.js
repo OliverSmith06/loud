@@ -10,7 +10,7 @@ import io from "socket.io-client"
 import "./App.css"
 
 
-const socket = io.connect('13.54.36.122:5050')
+const socket = io.connect('video.noppy.link:5050')
 function App() {
 	const [ me, setMe ] = useState("")
 	const [ stream, setStream ] = useState()
