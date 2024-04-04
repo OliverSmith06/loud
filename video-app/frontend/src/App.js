@@ -10,7 +10,13 @@ import io from "socket.io-client"
 import "./App.css"
 
 
-const socket = io.connect('video.noppy.link:5050')
+const socket = io.connect('video.noppy.link')
+// const socket = io.connect('https://video.noppy.link', {
+//   withCredentials: true,
+//   extraHeaders: {
+//     "Access-Control-Allow-Origin": "*"
+//   }
+// });
 function App() {
 	const [ me, setMe ] = useState("")
 	const [ stream, setStream ] = useState()
