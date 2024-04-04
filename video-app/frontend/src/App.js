@@ -26,16 +26,34 @@ function App() {
 	const [ callAccepted, setCallAccepted ] = useState(false)
 	const [ idToCall, setIdToCall ] = useState("")
 	const [ callEnded, setCallEnded] = useState(false)
+	const [ cameraPermissionDenied, setCameraPermissionDenied] = useState(false)
 	const [ name, setName ] = useState("")
 	const myVideo = useRef()
 	const userVideo = useRef()
 	const connectionRef= useRef()
 
 	useEffect(() => {
-		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-			setStream(stream)
-				myVideo.current.srcObject = stream
-		})
+		// navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+		// 	setStream(stream)
+		// 		myVideo.current.srcObject = stream
+		// })
+		const getMedia = async () => {
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+				setStream(stream);
+				myVideo.current.srcObject = stream;
+			} catch (error) {
+				console.error('Error accessing camera:', error);
+				const tryAgain = window.confirm('Failed to access camera. Would you like to try again?');
+				if (tryAgain) {
+					getMedia(); // Try again
+				} else {
+					setCameraPermissionDenied(true); // Set a state variable to indicate permission denial
+				}
+			}
+		};
+
+		getMedia();
 
 		socket.on("me", (id) => {
 			console.log(id);
