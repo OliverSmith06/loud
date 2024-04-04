@@ -31,11 +31,13 @@ function App() {
 				myVideo.current.srcObject = stream
 		})
 
-	socket.on("me", (id) => {
+		socket.on("me", (id) => {
+			console.log(id);
 			setMe(id)
 		})
 
 		socket.on("callUser", (data) => {
+			console.log("callUser" + data);
 			setReceivingCall(true)
 			setCaller(data.from)
 			setName(data.name)
