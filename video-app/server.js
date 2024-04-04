@@ -4,7 +4,7 @@ const app = express()
 const server = http.createServer(app)
 const io = require("socket.io")(server, {
 	cors: {
-		origin: "call.noppy.link",
+		origin: ["call.noppy.link", "localhost:3001"],
 		methods: [ "GET", "POST" ]
 	}
 })
