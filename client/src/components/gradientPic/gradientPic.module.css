@@ -21,13 +21,13 @@
 
 /* SMALL SCREEN */
 .seoulImg, .seoulBW {
-  background-image: url("./guangzhou-mobile.jpg");
+  background-image: url("./sydney-mobile.jpg");
   background-size: 125vw;
 }
 
 @media (min-width: 768px) {
   .seoulImg,
   .seoulBW {
-    background-image: url("./guangzhou.jpg");
+    background-image: url("./sydney.jpg");
   }
 }

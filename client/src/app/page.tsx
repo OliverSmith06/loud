@@ -218,7 +218,9 @@ const Home = () => {
     <div>
       {allowedToView != null && (allowedToView ? (
         <div>
-            <Link href="/Countdown">Countdown</Link>
+            <div className='countdownRoute'>
+              <Link href="/Countdown">Countdown</Link>
+            </div>
             {showModal && (
               <div className="add-section__modal">
                 <div className='add-section__modal--wrapper'>

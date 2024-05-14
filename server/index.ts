@@ -15,6 +15,9 @@ import jwt from 'jsonwebtoken';
 import ffmpeg from 'fluent-ffmpeg';
 import { exec } from 'child_process';
 import sharp from 'sharp';
+import { Server } from "socket.io";
+import http from "http";
+import { Item } from './models/Item';
 
 dotenv.config();
 
@@ -28,6 +31,13 @@ ffmpeg.setFfprobePath(require('@ffprobe-installer/ffprobe').path);
 
 const app: Express = express();
 const port = process.env.PORT;
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -53,6 +63,23 @@ function authenticateToken(req: any, res: any, next: any) {
     next();
   });
 }
+
+io.on("connection", (socket) => {
+  console.log(socket.id);
+  socket.emit("me", socket.id);
+
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("callEnded");
+  });
+
+  socket.on("callUser", (data: { userToCall: string; signalData: any; from: string; name: string }) => {
+    io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name });
+  });
+
+  socket.on("answerCall", (data: { to: string; signal: any }) => {
+    io.to(data.to).emit("callAccepted", data.signal);
+  });
+});
 
 app.get("/protected", authenticateToken, (req, res) => {
   res.status(200).json({ message: "Authenticated endpoint accessed successfully" });
@@ -174,6 +201,45 @@ app.get('/addTestDance', (req: Request, res: Response) => {
   })
 });
 
+app.post('/postItem', async(req: Request, res: Response) => {
+  try {
+    const newItem: Item = req.body;
+
+    const query = `
+      INSERT INTO todoItems ("name", "category", "desc", "itemImgUrl", "itemUrl", "location", "price")
+      SELECT $1, $2, $3, $4, $5, $6, $7
+      RETURNING *
+    `;
+    const values = [
+      newItem.name, 
+      newItem.category, 
+      newItem.desc, 
+      newItem.itemImgUrl, 
+      newItem.itemURL, 
+      newItem.location,
+      newItem.price
+    ];
+
+    const result = await pool.query(query, values);
+    const insertedItem = result.rows[0];
+
+    res.status(201).json({ message: 'Item added successfully', video: insertedItem });
+  } catch (error) {
+    console.error('Error creating video:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+})
+
+app.get('/getCategories', (req: Request, res: Response) => {
+  console.log("CALL HERE!")
+  pool.query('SELECT * FROM itemCategories ORDER BY id ASC', (error: any, results: any) => {
+    if (error) {
+      throw error
+    }
+    res.status(200).json(results.rows)
+  })
+});
+
 app.post('/createVideo', async (req: Request, res: Response) => {
   try {
     const newVideo: Video = req.body;
@@ -235,6 +301,19 @@ app.put('/updateOrdering', async (req: Request, res: Response) => {
   
     res.status(201).send({ message: 'Order updated!' })
 })
+
+app.get('/getItems', async (req: Request, res: Response) => {
+  try {
+    const categoryId = req.query.categoryId; // Ensure dance is a string
+    // console.log(dance)
+    const query = 'SELECT * FROM todoitems WHERE category = $1';
+    const { rows } = await pool.query(query, [categoryId]);
+    res.status(200).json({ items: rows }); // Send the database results in the response
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 app.get('/videos', async (req: Request, res: Response) => {
   try {
@@ -476,6 +555,8 @@ app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Internal server error' });
 });
+
+// server.listen(7000, () => console.log("server is running on port 5000"))
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

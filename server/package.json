@@ -10,7 +10,7 @@
     "callBuild": "npx tsc",
     "callStart": "node dist/callServer.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
-    "callDev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/callServer.js\""
+    "callDev": "nodemon callServer.js"
   },
   "keywords": [],
   "author": "",

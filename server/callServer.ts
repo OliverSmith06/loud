@@ -5,7 +5,12 @@ import { v4 as uuidV4 } from 'uuid';
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+		origin: "http://localhost:3000",
+		methods: [ "GET", "POST" ]
+	}
+});
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
