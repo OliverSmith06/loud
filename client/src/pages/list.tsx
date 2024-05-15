@@ -25,7 +25,7 @@ export const List = () => {
     }, []);
     return (
         <div className="list-page">
-            <div className='list-page__title'>Gina & Ollie's Ultimate Collab</div>
+            <div className='list-page__title'>Golly Ultimate Collab</div>
             <div className="list-page__category-wrapper">
                 {categories ? (
                     categories.map((category: ItemCategory) => (
