@@ -1,38 +1,42 @@
-'use client'
-import * as React from 'react';
-import { useEffect, useState, MouseEvent } from 'react';
-import './page.scss'
-import { SortableItem } from '@/components/SortableItem/SortableItem';
+"use client";
+import * as React from "react";
+import { useEffect, useState, MouseEvent } from "react";
+import "./page.scss";
+import { SortableItem } from "@/components/SortableItem/SortableItem";
 import {
-  DndContext, 
+  DndContext,
   closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   horizontalListSortingStrategy,
-  rectSortingStrategy
-} from '@dnd-kit/sortable';
-import { KeyboardArrowUp, KeyboardArrowDown, Add, AddCircleOutline } from '@mui/icons-material';
-import { Accordion } from '@/components/Accordion/Accordion';
-import { Button, CircularProgress, TextField } from '@mui/material';
-import { Dance } from '@/models/Dance';
-import { postDance } from '@/api/postDance';
-import axios from 'axios';
-import ParticleBackground from '@/components/ParticleBackground/ParticleBackground';
-import LoginPage from '@/components/LoginPage/LoginPage';
-import { PageHeading } from '@/components/PageHeading/PageHeading';
-import {  baseBackendUrl } from '@/secrets/env';
-import Link from 'next/link';
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import {
+  KeyboardArrowUp,
+  KeyboardArrowDown,
+  Add,
+  AddCircleOutline,
+} from "@mui/icons-material";
+import { Accordion } from "@/components/Accordion/Accordion";
+import { Button, CircularProgress, TextField } from "@mui/material";
+import { Dance } from "@/models/Dance";
+import { postDance } from "@/api/postDance";
+import axios from "axios";
+import ParticleBackground from "@/components/ParticleBackground/ParticleBackground";
+import LoginPage from "@/components/LoginPage/LoginPage";
+import { PageHeading } from "@/components/PageHeading/PageHeading";
+import { baseBackendUrl } from "@/secrets/env";
+import Link from "next/link";
 
 const Home = () => {
-
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [sectionData, setSectionData] = useState<any>(null);
   const [allowedToView, setAllowedToView] = useState<boolean | null>(null);
@@ -55,16 +59,16 @@ const Home = () => {
     // };
     const fetchAccess = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const response = await fetch(`http://${baseBackendUrl}/protected`, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${token}` // Include the token in the Authorization header
-          }
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
         });
         if (!response.ok) {
           setAllowedToView(false);
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
         setAllowedToView(true);
         const data = await response.json();
@@ -75,26 +79,24 @@ const Home = () => {
       }
     };
 
-    
-    const clearFileQueue = async() => {
-      const res = await axios.get(`http://${baseBackendUrl}/clearFileQueue`)
-    }
+    const clearFileQueue = async () => {
+      const res = await axios.get(`http://${baseBackendUrl}/clearFileQueue`);
+    };
 
-    
-    const fetchDances = async() => {
+    const fetchDances = async () => {
       const res = await fetch(`http://${baseBackendUrl}/dances`);
-      if(!res.ok) {
-        console.log(res)
-        throw new Error('failed to fetch sections');
+      if (!res.ok) {
+        console.log(res);
+        throw new Error("failed to fetch sections");
       }
       const data = await res.json();
       setSectionData(data.dances);
-    }
+    };
 
     const initializeData = async () => {
       await fetchDances(); // Wait for fetchDances to complete
     };
-  
+
     fetchAccess();
     initializeData();
 
@@ -106,7 +108,6 @@ const Home = () => {
     };
   }, []);
 
-
   // const [items, setItems] = useState([2,1,3,4]);
   // const sensors = useSensors(
   //   useSensor(PointerSensor),
@@ -117,12 +118,12 @@ const Home = () => {
 
   // function handleDragEnd(event: any) {
   //   const {active, over} = event;
-    
+
   //   if (active.id !== over.id) {
   //     setItems((items) => {
   //       const oldIndex = items.indexOf(active.id);
   //       const newIndex = items.indexOf(over.id);
-        
+
   //       return arrayMove(items, oldIndex, newIndex);
   //     });
   //   }
@@ -176,11 +177,11 @@ const Home = () => {
 
   const openAddSection = () => {
     setShowModal(true);
-  }
+  };
 
   const closeAddSection = () => {
     setShowModal(false);
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -194,43 +195,64 @@ const Home = () => {
   async function postData() {
     if (sectionName == null || sectionDesc == null) {
       setHasError(true);
-      return
+      return;
     }
     closeAddSection();
     const dance: Dance = {
       name: [sectionName],
       desc: [sectionDesc],
       dance_order: 1,
-    }
+    };
 
-
-    const url = `http://${baseBackendUrl}/createDance`
+    const url = `http://${baseBackendUrl}/createDance`;
     try {
       const data = await postDance(url, dance);
       window.location.reload();
-      console.log('Posted dance:', data);
+      console.log("Posted dance:", data);
     } catch (error) {
-      console.error('Failed to post dance:', error);
+      console.error("Failed to post dance:", error);
     }
   }
 
   return (
     <div>
-      {allowedToView != null && (allowedToView ? (
-        <div>
-            <div className='countdownRoute'>
+      {allowedToView != null &&
+        (allowedToView ? (
+          <div>
+            <div className="countdownRoute">
               <Link href="/Countdown">Countdown</Link>
             </div>
             {showModal && (
               <div className="add-section__modal">
-                <div className='add-section__modal--wrapper'>
+                <div className="add-section__modal--wrapper">
                   <div className="section-form__close">
-                    <span  onClick={closeAddSection}>&times;</span>
+                    <span onClick={closeAddSection}>&times;</span>
                   </div>
                   <div className="add-section__modal--content">
-                    <TextField error={hasError} required className='section-form__title' onChange={(evt) => setSectionName(evt.target.value)} id="standard-basic" label="Name" variant="standard" />
-                    <TextField error={hasError} required className='section-form__title' onChange={(evt) => setSectionDesc(evt.target.value)} id="standard-basic" label="Description" variant="standard" />
-                    <Button className='section-form__submit' onClick={postData} variant="contained" color="secondary">
+                    <TextField
+                      error={hasError}
+                      required
+                      className="section-form__title"
+                      onChange={(evt) => setSectionName(evt.target.value)}
+                      id="standard-basic"
+                      label="Name"
+                      variant="standard"
+                    />
+                    <TextField
+                      error={hasError}
+                      required
+                      className="section-form__title"
+                      onChange={(evt) => setSectionDesc(evt.target.value)}
+                      id="standard-basic"
+                      label="Description"
+                      variant="standard"
+                    />
+                    <Button
+                      className="section-form__submit"
+                      onClick={postData}
+                      variant="contained"
+                      color="secondary"
+                    >
                       Add Section
                     </Button>
                   </div>
@@ -238,26 +260,34 @@ const Home = () => {
               </div>
             )}
             <div className="flex min-h-screen flex-col items-center p-24 dashboard">
-            <PageHeading />
-            {sectionData ? (
-              sectionData.map((section: any) => (
-                <Accordion key={section.id} danceId={section.id} title={section.name} videoIds={[1,3]} />
-              ))
-            ) : (
-              <CircularProgress style={{marginBottom: '2rem'}} />
-            )}
-            <div onClick={openAddSection} className='add-section'><div className='line'></div><AddCircleOutline /><div className='line'></div></div>
+              <PageHeading />
+              {sectionData ? (
+                sectionData.map((section: any) => (
+                  <Accordion
+                    key={section.id}
+                    danceId={section.id}
+                    title={section.name}
+                    videoIds={[1, 3]}
+                  />
+                ))
+              ) : (
+                <CircularProgress style={{ marginBottom: "2rem" }} />
+              )}
+              <div onClick={openAddSection} className="add-section">
+                <div className="line"></div>
+                <AddCircleOutline />
+                <div className="line"></div>
+              </div>
+            </div>
           </div>
-          
-        </div>
-      ) : (
-        <div>
-          <ParticleBackground />
-          <LoginPage />
-        </div>
-      ))}
+        ) : (
+          <div>
+            <ParticleBackground />
+            <LoginPage />
+          </div>
+        ))}
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

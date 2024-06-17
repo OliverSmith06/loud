@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 
 function GradientPic() {
   const startDate = new Date("2024-02-27T18:00:00"); // Replace with your start date
-  const endDate = new Date("2024-06-14T08:20:00"); // Replace with your end date 06/14/2024 08:20:00
+  const endDate = new Date("2024-06-28T08:20:00"); // Replace with your end date 06/14/2024 08:20:00
 
   // Calculate the total time difference in milliseconds
   const totalTime: number = +endDate - +startDate;

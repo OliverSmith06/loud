@@ -1,5 +1,5 @@
 import styles from "./timer.module.css";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const Timer = () => {
   // const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -11,7 +11,7 @@ const Timer = () => {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    const target = new Date("06/14/2024 08:20:00");
+    const target = new Date("06/28/2024 08:20:00");
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -41,14 +41,12 @@ const Timer = () => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.countdownTitle}>
-        Time Until Gina Visits
-      </div>
+      <div className={styles.countdownTitle}>Time Until Gina Visits</div>
       <div className={styles.countdownText}>
         {days} days {hours} hours {minutes} minutes {seconds} seconds
       </div>
     </div>
   );
-}
+};
 
 export default Timer;
