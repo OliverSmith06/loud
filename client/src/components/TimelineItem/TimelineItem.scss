@@ -1,0 +1,66 @@
+.timelineItem {
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__top-hexagon {
+    width: 0;
+    border-bottom: 15px solid #bdbdbe;
+    border-left: 26px solid transparent;
+    border-right: 26px solid transparent;
+  }
+
+  &__middle-hexagon {
+    width: 52px;
+    height: 30px;
+    background-color: #bdbdbe;
+  }
+
+  &__bottom-hexagon {
+    width: 0;
+    border-top: 15px solid #bdbdbe;
+    border-left: 26px solid transparent;
+    border-right: 26px solid transparent;
+  }
+
+  &__experience-line {
+    background-color: #bdbdbe;
+    width: 0.5rem;
+    height: 20rem;
+    margin-top: -10px;
+  }
+
+  &__content {
+    position: absolute;
+    left: 0;
+    padding-left: 10px;
+    width: 40vw;
+    text-align: center;
+  }
+
+  &__company {
+    font-size: 0.8rem;
+  }
+
+  &__dates {
+    font-size: 0.8rem;
+  }
+
+  &__title {
+    color: #b837eb;
+    font-weight: 500;
+  }
+
+  &__icon {
+    // margin-right: 196px;
+    margin-top: -10px;
+  }
+}
