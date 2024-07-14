@@ -38,8 +38,8 @@ const ProjectItem: React.FC<ProjecItemProps> = ({
       className="mt-5 mb-5 bg-[#232b35] flex flex-col justify-start"
     >
       <div className="text-brandPurple text-xl font-extrabold">{title}</div>
-      <div className="text-xs font-semibold">{date}</div>
-      <div className="text-base mt-5">{desc}</div>
+      <div className="text-xs text-white font-semibold">{date}</div>
+      <div className="text-base text-white mt-5">{desc}</div>
       <div className="flex flex-row text-xs mt-2">
         {skills.map((item, index) => (
           <Chip key={index}>{item}</Chip>
@@ -56,7 +56,7 @@ const ProjectItem: React.FC<ProjecItemProps> = ({
           <div className="w-7">
             <GithubLogo />
           </div>
-          <div className="ml-1">GitHub Page</div>
+          <div className="ml-1 text-white">GitHub Page</div>
         </div>
         {projectUrl && (
           <div

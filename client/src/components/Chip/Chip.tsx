@@ -9,7 +9,7 @@ interface ChipProps {
 
 const Chip: React.FC<ChipProps> = ({ children }) => {
   return (
-    <div className="pr-2 pl-2 rounded-full ml-1 mr-1 bg-brandPurple">
+    <div className="pr-2 pl-2 text-white rounded-full ml-1 mr-1 bg-brandPurple">
       {children}
     </div>
   );
