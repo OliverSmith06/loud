@@ -117,8 +117,9 @@ function TimelineV2() {
   }
   return (
     <div className="flex h-1/2 flex-row justify-center timeline">
-      {experiences.map((experience) => (
+      {experiences.map((experience, index) => (
         <TimelineItem
+          key={index}
           title={experience.title}
           company={experience.company}
           dateStarted={experience.dateStarted}

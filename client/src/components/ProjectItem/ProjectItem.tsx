@@ -42,7 +42,7 @@ const ProjectItem: React.FC<ProjecItemProps> = ({
       <div className="text-base mt-5">{desc}</div>
       <div className="flex flex-row text-xs mt-2">
         {skills.map((item, index) => (
-          <Chip>{item}</Chip>
+          <Chip key={index}>{item}</Chip>
         ))}
       </div>
 
