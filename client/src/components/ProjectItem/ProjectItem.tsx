@@ -48,7 +48,7 @@ const ProjectItem: React.FC<ProjecItemProps> = ({
 
       <div className="flex flex-col flex-grow justify-end">
         <div
-          className="flex flex-row mb-2 mt-2 hover:cursor"
+          className="flex flex-row mb-2 mt-2 hover:cursor-pointer"
           onClick={() => {
             window.location.href = url;
           }}
@@ -63,7 +63,7 @@ const ProjectItem: React.FC<ProjecItemProps> = ({
             onClick={() => {
               window.location.href = projectUrl;
             }}
-            className="flex flex-row hover:cursor"
+            className="flex flex-row hover:cursor-pointer"
           >
             <Button className="bg-brandPurple" variant="contained">
               Project Demo

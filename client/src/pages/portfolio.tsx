@@ -158,7 +158,7 @@ export const portfolio = () => {
               <div className="mt-5 mb-10 ">
                 {"I've recently started as a "}{" "}
                 <div className="text-brandPurple font-semibold inline">
-                  {"Graduate Software Engineer"}
+                  {"Associate Software Engineer"}
                 </div>{" "}
                 {" at "}{" "}
                 <div className="font-semibold inline">

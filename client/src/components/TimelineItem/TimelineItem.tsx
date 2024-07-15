@@ -58,7 +58,7 @@ const TimelineItem: React.FC<Experience> = ({
             {monthNames[dateStarted.getMonth()]} {dateStarted.getFullYear()}{" "}
             {dateEnded && (
               <>
-                - {monthNames[dateEnded.getMonth()]} {dateStarted.getFullYear()}
+                - {monthNames[dateEnded.getMonth()]} {dateEnded.getFullYear()}
               </>
             )}
           </div>
