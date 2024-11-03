@@ -33,7 +33,7 @@ import axios from "axios";
 import ParticleBackground from "@/components/ParticleBackground/ParticleBackground";
 import LoginPage from "@/components/LoginPage/LoginPage";
 import { PageHeading } from "@/components/PageHeading/PageHeading";
-import { baseBackendUrl } from "@/secrets/env";
+import { baseBackendUrl, baseBackendUrlV2 } from "@/secrets/env";
 import Link from "next/link";
 
 const Home = () => {
@@ -60,7 +60,7 @@ const Home = () => {
     const fetchAccess = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`http://${baseBackendUrl}/protected`, {
+        const response = await fetch(`${baseBackendUrlV2}/protected`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the Authorization header
@@ -80,11 +80,11 @@ const Home = () => {
     };
 
     const clearFileQueue = async () => {
-      const res = await axios.get(`http://${baseBackendUrl}/clearFileQueue`);
+      const res = await axios.get(`${baseBackendUrlV2}/clearFileQueue`);
     };
 
     const fetchDances = async () => {
-      const res = await fetch(`http://${baseBackendUrl}/dances`);
+      const res = await fetch(`${baseBackendUrlV2}/dances`);
       if (!res.ok) {
         console.log(res);
         throw new Error("failed to fetch sections");
@@ -204,7 +204,7 @@ const Home = () => {
       dance_order: 1,
     };
 
-    const url = `http://${baseBackendUrl}/createDance`;
+    const url = `${baseBackendUrlV2}/createDance`;
     try {
       const data = await postDance(url, dance);
       window.location.reload();

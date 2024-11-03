@@ -1,36 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {useSortable} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
-import './SortableItem.scss'
-import ReactPlayer from 'react-player';
-import { getVideos } from '@/api/getVideos';
-import { getVideo } from '@/api/getVideo';
-import { CircularProgress } from '@mui/material';
-import { VideoContextMenu } from '@/components/VideoContextMenu/VideoContextMenu';
-import {  baseBackendUrl } from '@/secrets/env';
-import { PlayArrow } from '@mui/icons-material';
+import React, { useEffect, useRef, useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import "./SortableItem.scss";
+import ReactPlayer from "react-player";
+import { getVideos } from "@/api/getVideos";
+import { getVideo } from "@/api/getVideo";
+import { CircularProgress } from "@mui/material";
+import { VideoContextMenu } from "@/components/VideoContextMenu/VideoContextMenu";
+import { baseBackendUrl, baseBackendUrlV2 } from "@/secrets/env";
+import { PlayArrow } from "@mui/icons-material";
 
 interface SortableItemProps {
-    name: string;
+  name: string;
 }
 
 // const SortableItem: React.FC<SortableItemProps> = ({name}) => {
 export function SortableItem(props: any) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({id: props.id});
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: props.id });
 
   interface VideoItem {
     date: Date;
     desc: string;
     url: string;
-    title: string
+    title: string;
   }
-  
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -71,16 +66,16 @@ export function SortableItem(props: any) {
     //   }
     // };
 
-    const fetchVideoMetadata = async() => {
-      const url = `http://${baseBackendUrl}/video`;
+    const fetchVideoMetadata = async () => {
+      const url = `${baseBackendUrlV2}/video`;
       try {
         const data = await getVideo(url, props.danceId, props.id);
         setVideoData(data.video[0]);
         // fetchVideo(`${data.video[0].id}.${data.video[0].video_type}`);
       } catch (error) {
-        console.error('Failed to fetch videos:', error);
+        console.error("Failed to fetch videos:", error);
       }
-    }
+    };
 
     fetchVideoMetadata();
 
@@ -89,12 +84,10 @@ export function SortableItem(props: any) {
         URL.revokeObjectURL(videoUrl);
       }
     };
-  }, [videoUrl])
-
-  
+  }, [videoUrl]);
 
   const handleMouseEnter = () => {
-    console.log(props.isHeld)
+    console.log(props.isHeld);
     setShowControls(true);
   };
 
@@ -104,56 +97,66 @@ export function SortableItem(props: any) {
 
   const onPlay = () => {
     setPlayVideo(true);
-  }
-  
+  };
+
   return (
-    <div  
-      className='video-item--wrapper' 
-      ref={setNodeRef} 
-      style={style} 
-      {...attributes} 
+    <div
+      className="video-item--wrapper"
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
       {...listeners}
-      >
+    >
       {videoData && (
-        <div className='video-item__content'>
+        <div className="video-item__content">
           {videoData ? (
             <>
               {playVideo ? (
-                <video className='video-item__content--video' 
+                <video
+                  className="video-item__content--video"
                   autoPlay
                   controls={showControls} // Hide controls by default
                   onMouseEnter={handleMouseEnter} // Show controls on mouse enter
                   onMouseLeave={handleMouseLeave}
                 >
-                  <source src={`http://${baseBackendUrl}/video/${videoData.id}.${videoData.video_type}`} type="video/mp4" />
+                  <source
+                    src={`${baseBackendUrlV2}/video/${videoData.id}.${videoData.video_type}`}
+                    type="video/mp4"
+                  />
                   Your browser does not support the video tag.
                 </video>
               ) : (
-                <div 
-                  onClick={onPlay} 
-                  className='video-item__content--video'
+                <div
+                  onClick={onPlay}
+                  className="video-item__content--video"
                   style={{
-                    backgroundImage: `url('http://${baseBackendUrl}/random-frame/${videoData.id}.${videoData.video_type}')`, // Replace with your image path
-                    backgroundSize: 'cover', // Adjust as needed
-                    backgroundPosition: 'center', // Adjust as needed
+                    backgroundImage: `url('${baseBackendUrlV2}/random-frame/${videoData.id}.${videoData.video_type}')`, // Replace with your image path
+                    backgroundSize: "cover", // Adjust as needed
+                    backgroundPosition: "center", // Adjust as needed
                   }}
                 >
-                  <div><PlayArrow style={{color: 'white', fontSize: '6rem'}} /></div>
+                  <div>
+                    <PlayArrow style={{ color: "white", fontSize: "6rem" }} />
+                  </div>
                 </div>
               )}
             </>
           ) : (
-            <div className='video-item__content--video-skeleton'><CircularProgress /></div>
-          )}
-          <div className='video-item__content--title'>
-            <div className='video-item__content--title--text'>
-              {videoData.name ? (videoData.name) : (videoData.date)}
+            <div className="video-item__content--video-skeleton">
+              <CircularProgress />
             </div>
-            <VideoContextMenu className='video-item__content--menu' videoId={videoData.id} />
+          )}
+          <div className="video-item__content--title">
+            <div className="video-item__content--title--text">
+              {videoData.name ? videoData.name : videoData.date}
+            </div>
+            <VideoContextMenu
+              className="video-item__content--menu"
+              videoId={videoData.id}
+            />
           </div>
         </div>
-        )
-      }
+      )}
     </div>
   );
 }
