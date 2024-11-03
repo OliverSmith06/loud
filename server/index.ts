@@ -39,11 +39,7 @@ const io = new Server(server, {
   },
 });
 app.use(bodyParser.json());
-app.use(
-  cors({
-    origin: "https://noppy.link",
-  })
-);
+app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
