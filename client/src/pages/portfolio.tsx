@@ -77,7 +77,7 @@ const classes = {
 
 // #1b1f24
 // #232b35
-export const portfolio = () => {
+export const Portfolio = () => {
   const githubUrl = "https://github.com/OliverSmith06";
   const instagramUrl = "https://www.instagram.com/oliver.smith06/";
   const linkedinUrl = "https://www.linkedin.com/in/oliver-smith-66985a196/";
@@ -269,4 +269,4 @@ export const portfolio = () => {
   );
 };
 
-export default portfolio;
+export default Portfolio;
