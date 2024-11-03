@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SM } from "../app/SM";
 import "../app/globals.css";
+import "./portfolio.scss";
 import NameSteps from "@/components/NameSteps/NameSteps";
 import TerminalArrow from "@/components/TerminalArrow/TerminalArrow";
 import TerminalSquiggle from "@/components/TerminalSquiggle/TerminalSquiggle";
@@ -12,6 +13,7 @@ import GoToPage from "@/components/GoToPage/GoToPage";
 import ProjectGallery from "@/components/ProjectGallery/ProjectGallery";
 import Contact from "@/components/Contact/Contact";
 import TimelineV2 from "@/components/TimelineV2/TimelineV2";
+import { useState } from "react";
 
 const classes = {
   main: {
@@ -61,6 +63,7 @@ const classes = {
     fontSize: SM.fontSize.M,
     color: SM.colors.text,
     spacing: SM.spacing.S,
+    zIndex: "1",
   },
   navLink: {
     padding: `${SM.spacing.XS} ${SM.spacing.S}`,
@@ -78,6 +81,7 @@ export const portfolio = () => {
   const githubUrl = "https://github.com/OliverSmith06";
   const instagramUrl = "https://www.instagram.com/oliver.smith06/";
   const linkedinUrl = "https://www.linkedin.com/in/oliver-smith-66985a196/";
+  const [showNav, setShowNav] = useState<boolean>(false);
 
   function navEnter(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     const target = e.target as HTMLButtonElement;
@@ -89,9 +93,12 @@ export const portfolio = () => {
     const target = e.target as HTMLButtonElement;
     target.style.filter = "brightness(100%)";
   }
-  function gotoPage(url: string) {
-    console.log("TEST");
-  }
+  const handleCloseNav = (event: React.MouseEvent<HTMLDivElement>) => {
+    setShowNav(false);
+  };
+  const handleOpenNav = (event: React.MouseEvent<HTMLDivElement>) => {
+    setShowNav(true);
+  };
 
   const handleOnClick = (id: string) => {
     const element = document.getElementById(id);
@@ -106,12 +113,45 @@ export const portfolio = () => {
     >
       <header className="fixed" style={classes.nav}>
         <div className="flex flex-row justify-end items-center">
-          <div className="flex-grow pl-4">Oliver Smith</div>
-          <GoToPage url="home" />
-          <GoToPage url="about" />
-          <GoToPage url="experience" />
-          <GoToPage url="projects" />
-          <GoToPage url="contact" />
+          <div className="flex flex-column flex-grow pl-4">Oliver Smith</div>
+          <div className="portfolio__standard-menu flex">
+            <GoToPage url="home" />
+            <GoToPage url="about" />
+            <GoToPage url="experience" />
+            <GoToPage url="projects" />
+            <GoToPage url="contact" />
+          </div>
+          <div onClick={handleOpenNav} className="portfolio__hamburger-menu">
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+        <div
+          onClick={handleCloseNav}
+          className={
+            "portfolio__hamburger-nav" + (showNav ? "" : " portfolio__hide-nav")
+          }
+        >
+          <div className="portfolio__hamburger-content">
+            <ul>
+              <li>
+                <GoToPage url="home" />
+              </li>
+              <li>
+                <GoToPage url="about" />
+              </li>
+              <li>
+                <GoToPage url="experience" />
+              </li>
+              <li>
+                <GoToPage url="projects" />
+              </li>
+              <li>
+                <GoToPage url="contact" />
+              </li>
+            </ul>
+          </div>
         </div>
       </header>
       <div
@@ -124,6 +164,7 @@ export const portfolio = () => {
           <NameSteps />
         </div>
       </div>
+
       <div id="about" style={classes.intro}>
         <div className="flex flex-col h-full">
           <div className="flex flex-col w-9/12">
@@ -134,7 +175,7 @@ export const portfolio = () => {
               <TerminalSquiggle /> <div className="pt-2">intro</div>
             </div>
             <div
-              className="flex-grow w-screen flex flex-col justify-center items-center"
+              className="flex-grow w-full flex flex-col justify-center items-center"
               style={classes.introBody}
             >
               <div className="mb-5 ">
@@ -196,6 +237,7 @@ export const portfolio = () => {
           </div>
         </div>
       </div>
+
       <div id="experience" style={classes.experience}>
         <div
           className="flex flex-row font-medium ml-4 mb-10"
