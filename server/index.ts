@@ -1,33 +1,33 @@
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import fs from 'fs';
-import { Pool } from 'pg';
-import path from 'path';
-import multer from 'multer';
-import { Dance } from './models/Dance';
-import { Video } from './models/Video';
-import { dbPassword } from './secrets/dbAuth';
-import { masterUsername, masterPassword } from './secrets/websiteLogin';
-import { poolConfig } from './secrets/dbConfig';
-import jwt from 'jsonwebtoken';
-import ffmpeg from 'fluent-ffmpeg';
-import { exec } from 'child_process';
-import sharp from 'sharp';
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
+import bodyParser from "body-parser";
+import cors from "cors";
+import fs from "fs";
+import { Pool } from "pg";
+import path from "path";
+import multer from "multer";
+import { Dance } from "./models/Dance";
+import { Video } from "./models/Video";
+import { dbPassword } from "./secrets/dbAuth";
+import { masterUsername, masterPassword } from "./secrets/websiteLogin";
+import { poolConfig } from "./secrets/dbConfig";
+import jwt from "jsonwebtoken";
+import ffmpeg from "fluent-ffmpeg";
+import { exec } from "child_process";
+import sharp from "sharp";
 import { Server } from "socket.io";
 import http from "http";
-import { Item } from './models/Item';
+import { Item } from "./models/Item";
 
 dotenv.config();
 
-const headers: Headers = new Headers()
+const headers: Headers = new Headers();
 
-headers.set('Content-Type', 'application/json')
-headers.set('Accept', 'application/json')
-headers.set('X-Custom-Header', 'CustomValue')
-ffmpeg.setFfmpegPath(require('@ffmpeg-installer/ffmpeg').path);
-ffmpeg.setFfprobePath(require('@ffprobe-installer/ffprobe').path);
+headers.set("Content-Type", "application/json");
+headers.set("Accept", "application/json");
+headers.set("X-Custom-Header", "CustomValue");
+ffmpeg.setFfmpegPath(require("@ffmpeg-installer/ffmpeg").path);
+ffmpeg.setFfprobePath(require("@ffprobe-installer/ffprobe").path);
 
 const app: Express = express();
 const port = process.env.PORT;
@@ -39,17 +39,21 @@ const io = new Server(server, {
   },
 });
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://noppy.link",
+  })
+);
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+app.get("/", (req: Request, res: Response) => {
+  res.send("Express + TypeScript Server");
 });
 
 const pool = new Pool(poolConfig);
 
 function authenticateToken(req: any, res: any, next: any) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
     return res.sendStatus(401);
@@ -72,9 +76,21 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("callEnded");
   });
 
-  socket.on("callUser", (data: { userToCall: string; signalData: any; from: string; name: string }) => {
-    io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name });
-  });
+  socket.on(
+    "callUser",
+    (data: {
+      userToCall: string;
+      signalData: any;
+      from: string;
+      name: string;
+    }) => {
+      io.to(data.userToCall).emit("callUser", {
+        signal: data.signalData,
+        from: data.from,
+        name: data.name,
+      });
+    }
+  );
 
   socket.on("answerCall", (data: { to: string; signal: any }) => {
     io.to(data.to).emit("callAccepted", data.signal);
@@ -82,7 +98,9 @@ io.on("connection", (socket) => {
 });
 
 app.get("/protected", authenticateToken, (req, res) => {
-  res.status(200).json({ message: "Authenticated endpoint accessed successfully" });
+  res
+    .status(200)
+    .json({ message: "Authenticated endpoint accessed successfully" });
 });
 
 app.post("/login", (req, res) => {
@@ -92,30 +110,35 @@ app.post("/login", (req, res) => {
   const inputPassword = req.body.password;
 
   if (user !== inputUsername || password !== inputPassword) {
-    res.status(400).json({message: "username or password does not match"})
+    res.status(400).json({ message: "username or password does not match" });
     return;
   }
 
-  const token = jwt.sign({ username: user }, "RANDOM-TOKEN", { expiresIn: '1h' });
+  const token = jwt.sign({ username: user }, "RANDOM-TOKEN", {
+    expiresIn: "1h",
+  });
 
-  console.log('LOGGED IN: ' + new Date());
+  console.log("LOGGED IN: " + new Date());
 
   res.status(200).json({ token });
-})
-
-app.get('/getDances', (req: Request, res: Response) => {
-  pool.query('SELECT * FROM dances ORDER BY id ASC', (error: any, results: any) => {
-    if (error) {
-      throw error
-    }
-    res.status(200).json(results.rows)
-  })
 });
 
-app.get('/random-frame/:filename', async (req: Request, res: Response) => {
+app.get("/getDances", (req: Request, res: Response) => {
+  pool.query(
+    "SELECT * FROM dances ORDER BY id ASC",
+    (error: any, results: any) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).json(results.rows);
+    }
+  );
+});
+
+app.get("/random-frame/:filename", async (req: Request, res: Response) => {
   try {
     const videoPath = `./uploads/${req.params.filename}`;
-    const id = req.params.filename.split('.')[0]
+    const id = req.params.filename.split(".")[0];
     const tempImagePath = `./${id}-temp.jpg`;
 
     // Get the duration of the video
@@ -138,8 +161,8 @@ app.get('/random-frame/:filename', async (req: Request, res: Response) => {
         .seekInput(0)
         .frames(1)
         .output(tempImagePath)
-        .on('end', () => resolve())
-        .on('error', (err) => reject(err))
+        .on("end", () => resolve())
+        .on("error", (err) => reject(err))
         .run();
     });
 
@@ -147,61 +170,69 @@ app.get('/random-frame/:filename', async (req: Request, res: Response) => {
     const image = fs.readFileSync(tempImagePath);
 
     // Send the temporary image in the response
-    res.set('Content-Type', 'image/jpeg');
+    res.set("Content-Type", "image/jpeg");
     res.send(image);
 
     // Delete the temporary image file
     fs.unlinkSync(tempImagePath);
   } catch (e) {
-    console.error('Error:', e);
-    res.status(500).send('Failed to extract random frame');
+    console.error("Error:", e);
+    res.status(500).send("Failed to extract random frame");
   }
 });
 
-app.delete('/deleteVideo', async(req: Request, res: Response) => {
+app.delete("/deleteVideo", async (req: Request, res: Response) => {
   try {
-    const videoId = req.query.id
-    const values = [videoId]
+    const videoId = req.query.id;
+    const values = [videoId];
 
-    const findDance = 'SELECT dance FROM videos WHERE id = $1';
+    const findDance = "SELECT dance FROM videos WHERE id = $1";
     const findDanceRes = await pool.query(findDance, values);
     const danceId = findDanceRes.rows[0].dance;
 
-    const query = 'DELETE FROM videos WHERE id = $1';
+    const query = "DELETE FROM videos WHERE id = $1";
     await pool.query(query, values);
 
-    const findVideos = 'SELECT id FROM videos WHERE dance = $1 ORDER BY "order" ASC';
+    const findVideos =
+      'SELECT id FROM videos WHERE dance = $1 ORDER BY "order" ASC';
     const findVideosRes = await pool.query(findVideos, [danceId]);
-    const videoIds = findVideosRes.rows.map(item => parseInt(item.id, 10))
+    const videoIds = findVideosRes.rows.map((item) => parseInt(item.id, 10));
 
     videoIds.forEach((value: number, index: number) => {
-      const updateOrder = 'UPDATE videos SET "order" = $1 WHERE dance = $2 AND "id" = $3';
+      const updateOrder =
+        'UPDATE videos SET "order" = $1 WHERE dance = $2 AND "id" = $3';
       pool.query(updateOrder, [index + 1, danceId, value], (error, results) => {
         if (error) {
           throw error;
         }
-      })
-    })
+      });
+    });
 
-    res.status(200).json({message: `Video deleted successfully (id: ${videoId})`})
+    res
+      .status(200)
+      .json({ message: `Video deleted successfully (id: ${videoId})` });
   } catch (error) {
-    console.error('Error creating video:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error creating video:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-app.get('/addTestDance', (req: Request, res: Response) => {
+app.get("/addTestDance", (req: Request, res: Response) => {
   const { name, email } = req.body;
 
-  pool.query('INSERT INTO dances (name, "desc", dance_order) VALUES ($1, $2, $3) RETURNING *', [["Drama - Aespa"], ["first dance learning"], "0"], (error, results) => {
-    if (error) {
-      throw error
+  pool.query(
+    'INSERT INTO dances (name, "desc", dance_order) VALUES ($1, $2, $3) RETURNING *',
+    [["Drama - Aespa"], ["first dance learning"], "0"],
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
+      res.status(201).send(`User added with ID: ${results.rows[0].id}`);
     }
-    res.status(201).send(`User added with ID: ${results.rows[0].id}`)
-  })
+  );
 });
 
-app.post('/postItem', async(req: Request, res: Response) => {
+app.post("/postItem", async (req: Request, res: Response) => {
   try {
     const newItem: Item = req.body;
 
@@ -211,36 +242,41 @@ app.post('/postItem', async(req: Request, res: Response) => {
       RETURNING *
     `;
     const values = [
-      newItem.name, 
-      newItem.category, 
-      newItem.desc, 
-      newItem.itemImgUrl, 
-      newItem.itemURL, 
+      newItem.name,
+      newItem.category,
+      newItem.desc,
+      newItem.itemImgUrl,
+      newItem.itemURL,
       newItem.location,
-      newItem.price
+      newItem.price,
     ];
 
     const result = await pool.query(query, values);
     const insertedItem = result.rows[0];
 
-    res.status(201).json({ message: 'Item added successfully', video: insertedItem });
+    res
+      .status(201)
+      .json({ message: "Item added successfully", video: insertedItem });
   } catch (error) {
-    console.error('Error creating video:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error creating video:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-})
-
-app.get('/getCategories', (req: Request, res: Response) => {
-  console.log("CALL HERE!")
-  pool.query('SELECT * FROM itemCategories ORDER BY id ASC', (error: any, results: any) => {
-    if (error) {
-      throw error
-    }
-    res.status(200).json(results.rows)
-  })
 });
 
-app.post('/createVideo', async (req: Request, res: Response) => {
+app.get("/getCategories", (req: Request, res: Response) => {
+  console.log("CALL HERE!");
+  pool.query(
+    "SELECT * FROM itemCategories ORDER BY id ASC",
+    (error: any, results: any) => {
+      if (error) {
+        throw error;
+      }
+      res.status(200).json(results.rows);
+    }
+  );
+});
+
+app.post("/createVideo", async (req: Request, res: Response) => {
   try {
     const newVideo: Video = req.body;
 
@@ -249,32 +285,46 @@ app.post('/createVideo', async (req: Request, res: Response) => {
       SELECT $1, COALESCE((SELECT COUNT(*) FROM videos WHERE dance = $1), 0) + 1, $2, $3, $4, $5
       RETURNING *
     `;
-    const values = [newVideo.dance, newVideo.date, newVideo.name, newVideo.desc, newVideo.video_type];
+    const values = [
+      newVideo.dance,
+      newVideo.date,
+      newVideo.name,
+      newVideo.desc,
+      newVideo.video_type,
+    ];
 
     const result = await pool.query(query, values);
     const insertedVideo = result.rows[0]; // Assuming only one row is returned
 
-    res.status(201).json({ message: 'Video added successfully', video: insertedVideo });
+    res
+      .status(201)
+      .json({ message: "Video added successfully", video: insertedVideo });
   } catch (error) {
-    console.error('Error creating video:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error creating video:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
-app.post('/createDance', (req: Request, res: Response) => {
+app.post("/createDance", (req: Request, res: Response) => {
   const newDance: Dance = req.body;
 
-  pool.query('INSERT INTO dances (name, "desc", dance_order) VALUES ($1, $2, $3) RETURNING *', [newDance.name, newDance.desc, newDance.dance_order], (error, results) => {
-    if (error) {
-      console.log(error)
-      throw error
+  pool.query(
+    'INSERT INTO dances (name, "desc", dance_order) VALUES ($1, $2, $3) RETURNING *',
+    [newDance.name, newDance.desc, newDance.dance_order],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        throw error;
+      }
+      res
+        .status(201)
+        .send({ message: "Dance added successfully", dance: newDance });
     }
-    res.status(201).send({ message: 'Dance added successfully', dance: newDance })
-  })
+  );
 });
 
-app.get('/dances', (req: Request, res: Response) => {
-  pool.query('SELECT * FROM dances ORDER BY id ASC', (error, results) => {
+app.get("/dances", (req: Request, res: Response) => {
+  pool.query("SELECT * FROM dances ORDER BY id ASC", (error, results) => {
     if (error) {
       throw error;
     }
@@ -282,7 +332,7 @@ app.get('/dances', (req: Request, res: Response) => {
   });
 });
 
-app.put('/updateOrdering', async (req: Request, res: Response) => {
+app.put("/updateOrdering", async (req: Request, res: Response) => {
   const { initialOrdering, orderItems, danceId } = req.body;
   const query = 'SELECT id FROM videos WHERE dance = $1 ORDER BY "order" ASC';
   pool.query(query, [danceId], (error, results) => {
@@ -290,32 +340,37 @@ app.put('/updateOrdering', async (req: Request, res: Response) => {
       throw error;
     }
     orderItems.forEach((value: number, index: number) => {
-      const query = 'UPDATE videos SET "order" = $1 WHERE dance = $2 AND "id" = $3';
-      pool.query(query, [index + 1, danceId, results.rows[value-1].id], (error, results) => {
-        if (error) {
-          throw error;
+      const query =
+        'UPDATE videos SET "order" = $1 WHERE dance = $2 AND "id" = $3';
+      pool.query(
+        query,
+        [index + 1, danceId, results.rows[value - 1].id],
+        (error, results) => {
+          if (error) {
+            throw error;
+          }
         }
-      })
-    })
-  })
-  
-    res.status(201).send({ message: 'Order updated!' })
-})
+      );
+    });
+  });
 
-app.get('/getItems', async (req: Request, res: Response) => {
+  res.status(201).send({ message: "Order updated!" });
+});
+
+app.get("/getItems", async (req: Request, res: Response) => {
   try {
     const categoryId = req.query.categoryId; // Ensure dance is a string
     // console.log(dance)
-    const query = 'SELECT * FROM todoitems WHERE category = $1';
+    const query = "SELECT * FROM todoitems WHERE category = $1";
     const { rows } = await pool.query(query, [categoryId]);
     res.status(200).json({ items: rows }); // Send the database results in the response
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-app.get('/videos', async (req: Request, res: Response) => {
+app.get("/videos", async (req: Request, res: Response) => {
   try {
     const dance = req.query.dance; // Ensure dance is a string
     // console.log(dance)
@@ -323,12 +378,12 @@ app.get('/videos', async (req: Request, res: Response) => {
     const { rows } = await pool.query(query, [dance]);
     res.status(200).json({ videos: rows }); // Send the database results in the response
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-app.get('/video', async (req: Request, res: Response) => {
+app.get("/video", async (req: Request, res: Response) => {
   try {
     const danceId = req.query.danceId;
     const orderId = req.query.orderId;
@@ -336,8 +391,8 @@ app.get('/video', async (req: Request, res: Response) => {
     const { rows } = await pool.query(query, [danceId, orderId]);
     res.status(200).json({ video: rows }); // Send the database results in the response
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -351,25 +406,25 @@ const requestQueue: RequestItem[] = [];
 const queuedFiles = new Set<string>();
 let isProcessing = false;
 
-app.get('/clearFileQueue', (req, res) => {
+app.get("/clearFileQueue", (req, res) => {
   queuedFiles.clear();
   isProcessing = false;
-  console.log("CLEARED")
-  res.status(200).json({message: "CLEARED"})
-})
+  console.log("CLEARED");
+  res.status(200).json({ message: "CLEARED" });
+});
 
-app.get('/video-tmep/:filename', (req, res) => {
-  const videoPath = path.join(__dirname, '..', 'uploads', req.params.filename);
-  
+app.get("/video-tmep/:filename", (req, res) => {
+  const videoPath = path.join(__dirname, "..", "uploads", req.params.filename);
+
   // Check if the video file exists
   if (!fs.existsSync(videoPath)) {
-    return res.status(404).send('Video not found');
+    return res.status(404).send("Video not found");
   }
 
   const fileExtension = req.params.filename.split(".").pop();
 
   // Set the content type for the response
-  res.setHeader('Content-Type', `video/${fileExtension}`);
+  res.setHeader("Content-Type", `video/${fileExtension}`);
 
   // Create a readable stream from the video file
   const videoStream = fs.createReadStream(videoPath);
@@ -378,56 +433,54 @@ app.get('/video-tmep/:filename', (req, res) => {
   videoStream.pipe(res);
 
   // Handle errors
-  videoStream.on('error', (err) => {
-    console.error('Error streaming video:', err);
-    res.status(500).send('Internal server error');
+  videoStream.on("error", (err) => {
+    console.error("Error streaming video:", err);
+    res.status(500).send("Internal server error");
   });
 });
 
-app.get('/video/:filename', (req, res) => {
-  const videoPath = path.join(__dirname, '..', 'uploads', req.params.filename);
+app.get("/video/:filename", (req, res) => {
+  const videoPath = path.join(__dirname, "..", "uploads", req.params.filename);
   let fileExtension = req.params.filename.split(".").pop();
-  if (fileExtension === 'mov') {
-    fileExtension = 'quicktime'
+  if (fileExtension === "mov") {
+    fileExtension = "quicktime";
   }
   const videoStat = fs.statSync(videoPath);
   const fileSize = videoStat.size;
   const videoRange = req.headers.range;
-  console.log("TEST")
+  console.log("TEST");
   if (videoRange) {
-      const parts = videoRange.replace(/bytes=/, "").split("-");
-      const start = parseInt(parts[0], 10);
-      const end = parts[1]
-          ? parseInt(parts[1], 10)
-          : fileSize-1;
-      const chunksize = (end-start) + 1;
-      const file = fs.createReadStream(videoPath, {start, end});
-      const head = {
-          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': chunksize,
-          'Content-Type': `video/${fileExtension}`,
-      };
-      res.writeHead(206, head);
-      file.pipe(res);
+    const parts = videoRange.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunksize = end - start + 1;
+    const file = fs.createReadStream(videoPath, { start, end });
+    const head = {
+      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+      "Accept-Ranges": "bytes",
+      "Content-Length": chunksize,
+      "Content-Type": `video/${fileExtension}`,
+    };
+    res.writeHead(206, head);
+    file.pipe(res);
   } else {
-      const head = {
-          'Content-Length': fileSize,
-          'Content-Type': `video/${fileExtension}`,
-      };
-      res.writeHead(200, head);
-      fs.createReadStream(videoPath).pipe(res);
+    const head = {
+      "Content-Length": fileSize,
+      "Content-Type": `video/${fileExtension}`,
+    };
+    res.writeHead(200, head);
+    fs.createReadStream(videoPath).pipe(res);
   }
 });
 
-app.get('/videoOld/:filename', (req, res) => {
-  console.log(queuedFiles)
-  console.log()
-  const videoPath = path.join(__dirname, '..', 'uploads', req.params.filename);
+app.get("/videoOld/:filename", (req, res) => {
+  console.log(queuedFiles);
+  console.log();
+  const videoPath = path.join(__dirname, "..", "uploads", req.params.filename);
   if (queuedFiles.has(videoPath)) {
     // File is already in the queue, do not add it again
-    console.log("ALREADY IN THERE")
-    console.log(requestQueue[0].videoPath)
+    console.log("ALREADY IN THERE");
+    console.log(requestQueue[0].videoPath);
     // return res.status(409).send('File is already in the queue');
   }
   requestQueue.push({ req, res, videoPath });
@@ -468,60 +521,58 @@ app.get('/videoOld/:filename', (req, res) => {
 });
 
 function processNextRequest() {
-  console.log("CALLED")
+  console.log("CALLED");
   // If there are no requests in the queue, return
   if (requestQueue.length === 0) {
     isProcessing = false;
     return;
   }
 
-  console.log("CALLED")
+  console.log("CALLED");
 
   // Set the flag to indicate that a request is being processed
   isProcessing = true;
 
   // Get the next request from the queue
-  const nextRequest = requestQueue.shift()
+  const nextRequest = requestQueue.shift();
   if (nextRequest) {
+    const { req, res, videoPath } = nextRequest;
 
-  
-  const { req, res, videoPath } = nextRequest;
+    // Process the request
+    const stat = fs.statSync(videoPath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
 
-  // Process the request
-  const stat = fs.statSync(videoPath);
-  const fileSize = stat.size;
-  const range = req.headers.range;
-  
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    if (range) {
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
 
-    const chunksize = (end - start) + 1;
-    const file = fs.createReadStream(videoPath, { start, end });
-    const head = {
-      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunksize,
-      'Content-Type': 'video/mp4',
-    };
+      const chunksize = end - start + 1;
+      const file = fs.createReadStream(videoPath, { start, end });
+      const head = {
+        "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": chunksize,
+        "Content-Type": "video/mp4",
+      };
 
-    res.writeHead(206, head);
-    file.pipe(res);
-  } else {
-    const head = {
-      'Content-Length': fileSize,
-      'Content-Type': 'video/mp4',
-    };
-    res.writeHead(200, head);
-    fs.createReadStream(videoPath).pipe(res);
+      res.writeHead(206, head);
+      file.pipe(res);
+    } else {
+      const head = {
+        "Content-Length": fileSize,
+        "Content-Type": "video/mp4",
+      };
+      res.writeHead(200, head);
+      fs.createReadStream(videoPath).pipe(res);
+    }
+
+    // When the response is finished, process the next request
+    res.on("finish", () => {
+      processNextRequest();
+    });
   }
-  
-  // When the response is finished, process the next request
-  res.on('finish', () => {
-    processNextRequest();
-  });
-}
 }
 
 const storage = multer.diskStorage({
@@ -553,7 +604,7 @@ app.use((err: any, req: any, res: any, next: any) => {
 
 app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Internal server error' });
+  res.status(500).json({ message: "Internal server error" });
 });
 
 // server.listen(7000, () => console.log("server is running on port 5000"))
