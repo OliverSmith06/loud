@@ -53,6 +53,31 @@ const LoginPage = () => {
     }
   };
 
+  const handleDemoLogin = async (e: any) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${baseBackendUrlV2}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "demoUser",
+          password: "oliverSydney!",
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Username or password does not match");
+      }
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      window.location.reload();
+    } catch (error) {
+      setError("Username or password does not match");
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       <Container component="main" maxWidth="xs">
@@ -108,6 +133,22 @@ const LoginPage = () => {
               sx={{ mt: 3, mb: 2 }}
             >
               Sign In
+            </Button>
+          </Box>
+          <Box
+            component="form"
+            onSubmit={handleDemoLogin}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <Button
+              type="submit"
+              fullWidth
+              color="warning"
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              demo user login
             </Button>
           </Box>
         </Box>

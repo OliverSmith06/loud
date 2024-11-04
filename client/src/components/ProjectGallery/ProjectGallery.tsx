@@ -27,9 +27,8 @@ const ProjectGallery = () => {
       <ProjectItem
         title="Calling App"
         date="June 2023"
-        desc="A list to store and organise various interests with my friend"
+        desc="Using websockets to create a real time video/audio calling app"
         url="https://github.com/OliverSmith06/loud"
-        projectUrl="https://noppy.link/list"
         skills={["Javascript", "Web Sockets"]}
       />
       <ProjectItem
